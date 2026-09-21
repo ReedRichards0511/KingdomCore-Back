@@ -28,3 +28,4 @@ class SequentialIdGenerator:
     def generate(self) -> UUID:
         self._counter += 1
         return UUID(f"{self._prefix}-{self._counter:012d}")
+

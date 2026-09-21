@@ -35,6 +35,10 @@ Carga la skill que corresponda a lo que vas a tocar:
 9. **La promoción se bloquea por saldo pendiente o documentos incompletos, sin excepción.**
 10. **Todo `timestamptz`.** Presentación en `America/Guayaquil`. Prohibido `datetime.now()`
     sin zona: ruff lo bloquea con la regla `DTZ`.
+11. **Sin comentarios en el código.** Ni de línea, ni de bloque, ni docstrings
+    explicativos. El nombre del módulo, de la función y de la variable es lo único que
+    explica. Única excepción: las directivas que lee el tooling (`# type: ignore`,
+    `# noqa`).
 
 ## Comandos
 

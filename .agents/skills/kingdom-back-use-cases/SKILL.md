@@ -164,3 +164,24 @@ Verbo en imperativo, en ingles, describiendo la intencion del negocio:
 | El caso de uso llama a `datetime.now()` | Pide la hora al puerto `Clock` |
 | El caso de uso construye `uuid4()` | Pide el identificador a `IdGenerator` |
 | Reglas de negocio repartidas en varios casos de uso | Regla unica dentro de la entidad |
+
+## Sin comentarios en el codigo
+
+No se escriben comentarios. Ni de linea, ni de bloque, ni docstrings
+explicativos. El nombre del archivo, de la funcion y de la variable es lo unico
+que explica que hace el codigo. Si un fragmento necesita un comentario para
+entenderse, la respuesta es extraerlo a una funcion con nombre propio, no
+anotarlo.
+
+Unica excepcion: las directivas que leen las herramientas, porque no son
+comentarios sino instrucciones al tooling.
+
+```
+# type: ignore[arg-type]
+# noqa: E501
+// eslint-disable-next-line react-hooks/exhaustive-deps
+// @ts-expect-error
+```
+
+Los ejemplos de esta skill llevan una primera linea con la ruta del archivo
+solo para situar el fragmento. El codigo real no la lleva.

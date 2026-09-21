@@ -148,3 +148,24 @@ def test_el_repositorio_cumple_el_puerto() -> None:
 | Puerto con `session: AsyncSession` en la firma | La transaccion entra por `UnitOfWork` |
 | Un `IRepository[T]` generico para todo | Un puerto por agregado, con metodos con nombre |
 | Puerto declarado en `infrastructure/` | Puerto declarado en `domain/ports/` |
+
+## Sin comentarios en el codigo
+
+No se escriben comentarios. Ni de linea, ni de bloque, ni docstrings
+explicativos. El nombre del archivo, de la funcion y de la variable es lo unico
+que explica que hace el codigo. Si un fragmento necesita un comentario para
+entenderse, la respuesta es extraerlo a una funcion con nombre propio, no
+anotarlo.
+
+Unica excepcion: las directivas que leen las herramientas, porque no son
+comentarios sino instrucciones al tooling.
+
+```
+# type: ignore[arg-type]
+# noqa: E501
+// eslint-disable-next-line react-hooks/exhaustive-deps
+// @ts-expect-error
+```
+
+Los ejemplos de esta skill llevan una primera linea con la ruta del archivo
+solo para situar el fragmento. El codigo real no la lleva.
