@@ -1,0 +1,38 @@
+# Entornos virtuales
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Herramientas
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Secretos — nunca se commitean
+.env
+.env.*
+!.env.example
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Salidas generadas
+*.pdf
+!templates/**/*.pdf
+logs/
