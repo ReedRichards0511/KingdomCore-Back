@@ -51,8 +51,18 @@ uv run pytest -m "not integration"
 uv run alembic upgrade head
 ```
 
+## Decisiones registradas
+
+- **Throttling de login y concurrencia**: Varias peticiones de login fallidas simultáneas pueden pasar por `ensure_allowed` antes de registrar el fallo, y con múltiples workers el contador en memoria es por proceso. Se acepta temporalmente porque la protección de fondo la provee el rate limit de Supabase por IP. La solución definitiva (contador compartido y atómico en Postgres o Redis) se implementará al desplegar múltiples workers en producción.
+- **Pooler de Supabase y sentencias preparadas**: se usa el Session Pooler (puerto 5432), que admite sentencias preparadas, con `DATABASE_STATEMENT_CACHE_SIZE=100`. Si algún día se cambia al Transaction Pooler (6543), hay que poner `DATABASE_STATEMENT_CACHE_SIZE=0`, o asyncpg fallará de forma intermitente.
+- **Alembic síncrono**: la aplicación usa asyncpg, pero Alembic corre en modo síncrono con psycopg. `migrations/env.py` reescribe `postgresql://` a `postgresql+psycopg://`. No hay autogeneración: las revisiones se nombran a mano (`0001_...`) en el mismo orden que `migrations/sql/`, y cada una solo ejecuta su `.sql`.
+- **Códecs JSON en el pool**: cada conexión nueva registra códecs para `json` y `jsonb`, así los repositorios reciben diccionarios y no llaman a `json.loads`.
+- **Unidad de trabajo**: al salir del `async with` sin excepción hace commit; con excepción hace rollback y la deja propagar.
+- **Reglas de ruff ignoradas**: `B008` porque `Depends()` en defaults es el idioma de FastAPI; `TC001`–`TC003` porque FastAPI y Pydantic resuelven tipos en runtime; `N818` en `domain/errors.py` porque los errores nombran la regla violada (`BusinessRuleViolation`), no el mecanismo.
+- **Variables de entorno**: `SUPABASE_SERVICE_ROLE_KEY` jamás sale del backend. `SUPABASE_SYNTHETIC_EMAIL_DOMAIN` define el correo sintético `<documento>@<dominio>` con el que el backend habla con Supabase Auth.
+
 ## Estado
 
 - Esqueleto y configuración: listos.
-- Migraciones: pendientes. Se aplican una por una, con revisión previa.
-- Credenciales de Supabase y Cloudinary: `POR_CONFIGURAR` en `.env`.
+- Migraciones: `0001`–`0003` aplicadas.
+- Módulo de autenticación (`identity`): login, refresh, logout, perfil y cambio de contraseña.

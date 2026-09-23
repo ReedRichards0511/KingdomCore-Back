@@ -1,5 +1,3 @@
-"""Ciclo de vida de la aplicacion: arranque y apagado ordenados."""
-
 from __future__ import annotations
 
 from contextlib import asynccontextmanager

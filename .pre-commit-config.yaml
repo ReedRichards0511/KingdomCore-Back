@@ -16,7 +16,6 @@ repos:
       - id: check-merge-conflict
       - id: check-added-large-files
         args: [--maxkb=512]
-      # Impide commitear .env con credenciales reales.
       - id: detect-private-key
 
   - repo: local

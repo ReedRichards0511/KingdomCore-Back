@@ -1,1 +1,0 @@
-"""Adaptador de Cloudinary."""

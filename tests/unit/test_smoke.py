@@ -1,5 +1,3 @@
-"""Comprobaciones minimas de que el esqueleto esta bien armado."""
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -26,7 +24,7 @@ def test_el_reloj_del_sistema_siempre_trae_zona_horaria() -> None:
 
 def test_el_reloj_congelado_rechaza_datetimes_sin_zona() -> None:
     try:
-        FrozenClock(datetime(2026, 10, 4, 14, 0))  # noqa: DTZ001 - es lo que se prueba
+        FrozenClock(datetime(2026, 10, 4, 14, 0))  # noqa: DTZ001
     except ValueError:
         return
     raise AssertionError("FrozenClock debio rechazar un datetime naive")

@@ -1,13 +1,3 @@
-"""Entorno de Alembic.
-
-Alembic aqui es solo el libro de versiones: guarda que migracion se aplico y
-en que orden. El contenido de cada migracion vive en un archivo ``.sql`` plano
-dentro de ``migrations/sql/``, para que se pueda leer, revisar y aplicar
-tambien desde el panel de Supabase.
-
-No hay autogeneracion: no existe un modelo ORM del que derivar el esquema.
-"""
-
 from __future__ import annotations
 
 import os
@@ -26,7 +16,6 @@ def _database_url() -> str:
     url = os.environ.get("DATABASE_URL")
     if not url:
         raise RuntimeError("Falta DATABASE_URL. Copia .env.example a .env y completa la conexion.")
-    # La aplicacion usa asyncpg; Alembic corre en modo sincrono con psycopg.
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url

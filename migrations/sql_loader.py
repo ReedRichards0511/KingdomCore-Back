@@ -1,10 +1,3 @@
-"""Carga y ejecuta los archivos .sql de las migraciones.
-
-Cada revision de Alembic es una envoltura de tres lineas sobre un archivo de
-``migrations/sql/``. El SQL queda en texto plano, revisable en el diff del
-pull request y aplicable a mano desde el panel de Supabase si hiciera falta.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Unidad de trabajo sobre una transaccion de asyncpg."""
-
 from __future__ import annotations
 
 from types import TracebackType
@@ -10,13 +8,6 @@ if TYPE_CHECKING:
 
 
 class PostgresUnitOfWork:
-    """Toma una conexion del pool y la envuelve en una transaccion.
-
-    Al salir del ``async with`` sin excepcion hace commit. Si hubo excepcion,
-    hace rollback y la deja propagar: un caso de uso que falla a la mitad no
-    deja cargos huerfanos.
-    """
-
     def __init__(self, pool: asyncpg.Pool[Any]) -> None:
         self._pool = pool
         self._connection: asyncpg.Connection[Any] | None = None

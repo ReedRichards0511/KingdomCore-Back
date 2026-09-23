@@ -7,30 +7,20 @@ requires-python = ">=3.13,<3.14"
 license = { text = "Proprietary" }
 
 dependencies = [
-    # --- HTTP framework ---
     "fastapi[standard]>=0.120.0",
     "pydantic>=2.12.0",
     "pydantic-settings>=2.12.0",
-    "orjson>=3.11.0",
-    # --- Persistencia: Postgres directo, SQL escrito a mano ---
     "asyncpg>=0.30.0",
-    # --- Migraciones: Alembic envuelve los .sql versionados ---
     "alembic>=1.17.0",
     "psycopg[binary]>=3.2.0",
-    # --- Supabase sin SDK: REST admin + verificacion local de JWT ---
     "httpx>=0.28.0",
     "pyjwt[crypto]>=2.11.0",
     "tenacity>=9.1.0",
-    # --- Almacenamiento de archivos ---
     "cloudinary>=1.44.0",
-    # --- Identificadores ---
     "uuid-utils>=0.11.0",
-    # --- Generacion de PDF (ficha de inscripcion) ---
     "weasyprint>=67.0",
     "jinja2>=3.1.0",
-    # --- Inyeccion de dependencias ---
     "dependency-injector>=4.48.0",
-    # --- Observabilidad ---
     "structlog>=25.5.0",
 ]
 
@@ -57,45 +47,41 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/kingdom"]
 
-# ---------------------------------------------------------------------------
-# Ruff: lint + formato
-# ---------------------------------------------------------------------------
 [tool.ruff]
 target-version = "py313"
 line-length = 100
 src = ["src", "tests"]
-# Las skills son documentacion para los agentes; ruff no debe reformatear
-# los bloques de codigo de ejemplo que contienen.
 extend-exclude = [".claude", ".agents", ".codex"]
 
 [tool.ruff.lint]
 select = [
-    "E",    # pycodestyle
-    "W",    # pycodestyle warnings
-    "F",    # pyflakes
-    "I",    # isort
-    "N",    # pep8-naming
-    "UP",   # pyupgrade
-    "B",    # flake8-bugbear
-    "C4",   # flake8-comprehensions
-    "DTZ",  # flake8-datetimez  (prohibe datetimes naive)
-    "T20",  # flake8-print      (prohibe print())
-    "SIM",  # flake8-simplify
-    "TCH",  # flake8-type-checking
-    "RUF",  # reglas propias de ruff
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "C4",
+    "DTZ",
+    "T20",
+    "SIM",
+    "TCH",
+    "RUF",
     "ASYNC",
 ]
 ignore = [
-    "B008",   # llamadas en defaults: es el idioma de Depends() en FastAPI
-    "TC003",  # mover imports de la stdlib a TYPE_CHECKING estorba mas de lo que ahorra
+    "B008",
+    "TC001",
+    "TC002",
+    "TC003",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]
 "migrations/**" = ["E501"]
-# "BusinessRuleViolation" nombra la regla violada, no el mecanismo. El sufijo
-# "Error" que pide N818 solo alargaria el nombre en cada sitio de uso.
 "src/kingdom/shared/domain/errors.py" = ["N818"]
+"src/kingdom/contexts/*/domain/errors.py" = ["N818"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["kingdom"]
@@ -103,9 +89,6 @@ known-first-party = ["kingdom"]
 [tool.ruff.format]
 docstring-code-format = true
 
-# ---------------------------------------------------------------------------
-# Mypy: estricto
-# ---------------------------------------------------------------------------
 [tool.mypy]
 python_version = "3.13"
 strict = true
@@ -120,11 +103,9 @@ plugins = ["pydantic.mypy"]
 module = ["cloudinary.*", "weasyprint.*", "dependency_injector.*", "asyncpg.*", "uuid_utils.*"]
 ignore_missing_imports = true
 
-# ---------------------------------------------------------------------------
-# Pytest
-# ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src", "."]
 asyncio_mode = "auto"
 addopts = "-ra --strict-markers --cov=kingdom --cov-report=term-missing"
 markers = [

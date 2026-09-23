@@ -1,1 +1,0 @@
-"""Kernel compartido entre contextos."""

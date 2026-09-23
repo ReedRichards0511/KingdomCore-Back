@@ -1,5 +1,3 @@
-"""Configuracion de la aplicacion, leida desde variables de entorno."""
-
 from __future__ import annotations
 
 from enum import StrEnum
@@ -17,7 +15,6 @@ class Environment(StrEnum):
 
 
 def _config(prefix: str = "") -> SettingsConfigDict:
-    """Configuracion comun de lectura de entorno, con el prefijo de cada bloque."""
     return SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -46,8 +43,6 @@ class DatabaseSettings(BaseSettings):
     pool_min_size: int = 2
     pool_max_size: int = 10
     command_timeout: float = 30.0
-    # El Transaction Pooler de Supabase (puerto 6543) no mantiene la misma
-    # conexion entre sentencias, asi que las preparadas fallan. Ahi va en 0.
     statement_cache_size: int = 100
 
 
@@ -56,10 +51,12 @@ class SupabaseSettings(BaseSettings):
 
     url: str
     project_ref: str
+    publishable_key: SecretStr
     service_role_key: SecretStr
     synthetic_email_domain: str = "buenpastor.app"
     jwt_audience: str = "authenticated"
     jwks_cache_seconds: int = 3600
+    http_timeout_seconds: float = 10.0
 
     @property
     def jwks_url(self) -> str:
@@ -68,6 +65,14 @@ class SupabaseSettings(BaseSettings):
     @property
     def admin_users_url(self) -> str:
         return f"{self.url.rstrip('/')}/auth/v1/admin/users"
+
+    @property
+    def token_url(self) -> str:
+        return f"{self.url.rstrip('/')}/auth/v1/token"
+
+    @property
+    def logout_url(self) -> str:
+        return f"{self.url.rstrip('/')}/auth/v1/logout"
 
     @property
     def issuer(self) -> str:
@@ -83,6 +88,14 @@ class CloudinarySettings(BaseSettings):
     upload_folder: str = "kingdom-core"
 
 
+class AuthSettings(BaseSettings):
+    model_config = _config("AUTH_")
+
+    max_failed_sign_ins: int = 5
+    failed_sign_in_window_seconds: int = 900
+    max_tracked_sign_in_keys: int = 10_000
+
+
 class ObservabilitySettings(BaseSettings):
     model_config = _config()
 
@@ -92,12 +105,11 @@ class ObservabilitySettings(BaseSettings):
 
 
 class Settings:
-    """Agrupa los bloques de configuracion en un solo objeto."""
-
     def __init__(self) -> None:
         self.app = AppSettings()
         self.database = DatabaseSettings()
         self.supabase = SupabaseSettings()
+        self.auth = AuthSettings()
         self.cloudinary = CloudinarySettings()
         self.observability = ObservabilitySettings()
 

@@ -1,5 +1,3 @@
-"""Implementacion del reloj sobre la hora del sistema."""
-
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
@@ -9,8 +7,6 @@ PARISH_TIMEZONE = ZoneInfo("America/Guayaquil")
 
 
 class SystemClock:
-    """Reloj real. Guarda en UTC, presenta en la zona de la parroquia."""
-
     def now(self) -> datetime:
         return datetime.now(UTC)
 
@@ -19,8 +15,6 @@ class SystemClock:
 
 
 class FrozenClock:
-    """Reloj fijo para pruebas."""
-
     def __init__(self, instant: datetime) -> None:
         if instant.tzinfo is None:
             raise ValueError("FrozenClock exige un datetime con zona horaria")

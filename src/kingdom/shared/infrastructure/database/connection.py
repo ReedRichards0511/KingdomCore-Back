@@ -1,5 +1,3 @@
-"""Pool de conexiones asyncpg contra el Postgres de Supabase."""
-
 from __future__ import annotations
 
 import json
@@ -12,12 +10,6 @@ if TYPE_CHECKING:
 
 
 async def _init_connection(connection: asyncpg.Connection[Any]) -> None:
-    """Configura cada conexion nueva del pool.
-
-    asyncpg entrega ``jsonb`` como texto crudo. Lo decodificamos aqui para que
-    los repositorios reciban diccionarios y no tengan que acordarse de llamar
-    a ``json.loads`` en cada consulta que toque ``audit_log``.
-    """
     await connection.set_type_codec(
         "jsonb",
         encoder=json.dumps,
@@ -41,7 +33,7 @@ async def create_pool(settings: DatabaseSettings) -> asyncpg.Pool[Any]:
         statement_cache_size=settings.statement_cache_size,
         init=_init_connection,
     )
-    if pool is None:  # pragma: no cover - asyncpg solo devuelve None si falla
+    if pool is None:  # pragma: no cover
         raise RuntimeError("No se pudo crear el pool de conexiones")
     return pool
 

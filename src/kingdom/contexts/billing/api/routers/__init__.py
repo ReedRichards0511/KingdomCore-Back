@@ -1,1 +1,0 @@
-"""Routers FastAPI de billing."""

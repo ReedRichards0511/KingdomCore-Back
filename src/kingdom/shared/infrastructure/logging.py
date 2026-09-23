@@ -1,9 +1,3 @@
-"""Configuracion de structlog.
-
-En desarrollo la salida es coloreada y legible; en produccion es JSON de una
-linea por evento, que es lo que esperan los agregadores de logs.
-"""
-
 from __future__ import annotations
 
 import logging

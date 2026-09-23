@@ -1,1 +1,0 @@
-"""Piezas de aplicacion compartidas."""

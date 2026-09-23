@@ -1,10 +1,7 @@
-"""Punto de entrada de la API."""
-
 from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import ORJSONResponse
 
 from kingdom import __version__
 from kingdom.platform.lifespan import lifespan
@@ -20,7 +17,6 @@ def create_app() -> FastAPI:
         title="Kingdom Core API",
         description="Gestion catequetica — Parroquia El Buen Pastor de Turubamba",
         version=__version__,
-        default_response_class=ORJSONResponse,
         lifespan=lifespan,
         docs_url="/docs" if not settings.app.is_production else None,
         redoc_url=None,

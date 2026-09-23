@@ -1,16 +1,10 @@
-"""Traduccion de errores de dominio a respuestas HTTP.
-
-Este modulo es la frontera: es el unico sitio donde un error de negocio se
-convierte en un codigo de estado. Ningun caso de uso ni entidad debe importar
-``fastapi`` para reportar un fallo.
-"""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from fastapi import FastAPI, Request, status
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import JSONResponse
+from pydantic.alias_generators import to_camel
 
 from kingdom.shared.domain.errors import (
     AuthenticationError,
@@ -20,6 +14,7 @@ from kingdom.shared.domain.errors import (
     ExternalServiceError,
     NotFoundError,
     PermissionDeniedError,
+    TooManyRequestsError,
     ValidationError,
 )
 from kingdom.shared.infrastructure.logging import get_logger
@@ -37,6 +32,7 @@ STATUS_BY_ERROR: dict[type[DomainError], int] = {
     AuthenticationError: status.HTTP_401_UNAUTHORIZED,
     PermissionDeniedError: status.HTTP_403_FORBIDDEN,
     ExternalServiceError: status.HTTP_502_BAD_GATEWAY,
+    TooManyRequestsError: status.HTTP_429_TOO_MANY_REQUESTS,
 }
 
 
@@ -60,15 +56,23 @@ async def domain_error_handler(request: Request, exc: Exception) -> Response:
         **exc.context,
     )
 
-    return ORJSONResponse(
+    details = {to_camel(key): value for key, value in exc.context.items()} or None
+
+    headers: dict[str, str] | None = None
+    retry_after = exc.context.get("retry_after_seconds")
+    if isinstance(exc, TooManyRequestsError) and retry_after is not None:
+        headers = {"Retry-After": str(retry_after)}
+
+    return JSONResponse(
         status_code=http_status,
         content={
             "error": {
                 "code": exc.code,
                 "message": exc.message,
-                "details": exc.context or None,
+                "details": details,
             }
         },
+        headers=headers,
     )
 
 
