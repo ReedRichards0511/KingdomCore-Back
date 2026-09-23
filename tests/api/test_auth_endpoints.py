@@ -131,3 +131,16 @@ def test_una_peticion_con_campos_extra_se_rechaza(client: TestClient) -> None:
         },
     )
     assert response.status_code == 422
+    error = response.json()["error"]
+    assert error["code"] == "validation_error"
+    assert error["details"]["fields"] == ["extraField"]
+
+
+def test_el_error_de_validacion_no_devuelve_la_contrasena(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"documentType": "cedula", "password": "Secreta123"},
+    )
+    assert response.status_code == 422
+    assert "Secreta123" not in response.text
+    assert response.json()["error"]["details"]["fields"] == ["documentNumber"]

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic.alias_generators import to_camel
 
@@ -20,6 +21,8 @@ from kingdom.shared.domain.errors import (
 from kingdom.shared.infrastructure.logging import get_logger
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from fastapi.responses import Response
 
 logger = get_logger(__name__)
@@ -76,5 +79,28 @@ async def domain_error_handler(request: Request, exc: Exception) -> Response:
     )
 
 
+def _field_path(location: Sequence[int | str]) -> str:
+    return ".".join(str(part) for part in location[1:]) or "body"
+
+
+async def request_validation_error_handler(request: Request, exc: Exception) -> Response:
+    assert isinstance(exc, RequestValidationError)
+    fields = sorted({_field_path(error["loc"]) for error in exc.errors()})
+
+    logger.warning("request_validation_error", path=request.url.path, fields=fields)
+
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        content={
+            "error": {
+                "code": "validation_error",
+                "message": "La solicitud no es valida",
+                "details": {"fields": fields},
+            }
+        },
+    )
+
+
 def register_error_handlers(app: FastAPI) -> None:
     app.add_exception_handler(DomainError, domain_error_handler)
+    app.add_exception_handler(RequestValidationError, request_validation_error_handler)
